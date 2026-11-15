@@ -1,0 +1,143 @@
+AUTO-PILOT CHECKLIST
+สวัสดิการวัยเก๋า เข้าใจง่าย
+
+This file is your one checklist to turn the laptop factory into a free cloud autopilot:
+GitHub makes the video + Short → uploads to YouTube → goes Public at 18:00 Thailand
+(Short at 20:00) on Sunday, Tuesday, Thursday, Saturday.
+
+Mark each line [x] when done.
+
+
+============================================================
+A. ALREADY DONE ON THIS LAPTOP (you can skip)
+============================================================
+[x] Scripts, queue, facts, fonts, logo
+[x] Long video + Short render code
+[x] Auto schedule settings in channel.json (18:00 / 20:00, Sun Tue Thu Sat)
+[x] GitHub Actions workflow (.github/workflows/make-video.yml)
+[x] Video 001 already rendered locally and marked done
+[ ] (optional) Watch 001 before you upload it by hand later
+
+
+============================================================
+B. ONE-TIME: PUT THE PROJECT ON GITHUB (free)
+============================================================
+[ ] 1. Create a free GitHub account: https://github.com
+[ ] 2. Create a new repository named e.g. somchai-thai-channel
+[ ] 3. Set the repository to PUBLIC (needed for free Actions minutes)
+[ ] 4. On this PC, open PowerShell and run (replace YOUR_USERNAME):
+
+       cd d:\somchai-thai-channel
+       git init
+       git add .
+       git commit -m "Add Thai welfare video autopilot"
+       git branch -M main
+       git remote add origin https://github.com/YOUR_USERNAME/somchai-thai-channel.git
+       git push -u origin main
+
+[ ] 5. Open the repo on GitHub → Actions → enable workflows if asked
+[ ] 6. Confirm you see the workflow named "Make video"
+
+
+============================================================
+C. ONE-TIME: CONNECT YOUTUBE (so GitHub can upload)
+============================================================
+[ ] 7. Open Google Cloud Console: https://console.cloud.google.com/
+[ ] 8. Create a project (any name)
+[ ] 9. Enable API: YouTube Data API v3
+[ ] 10. OAuth consent screen → External → add your channel Google email as Test user
+[ ] 11. Create OAuth client → Application type: Desktop → save Client ID and Client Secret
+[ ] 12. Open OAuth Playground: https://developers.google.com/oauthplayground
+[ ] 13. Click the gear → tick "Use your own OAuth credentials" → paste Client ID + Secret
+[ ] 14. In the left list, choose scope:
+        https://www.googleapis.com/auth/youtube.upload
+[ ] 15. Authorize → sign in with the Google account that owns the channel
+[ ] 16. Click "Exchange authorization code for tokens"
+[ ] 17. Copy the Refresh token (long string)
+
+[ ] 18. In GitHub repo → Settings → Secrets and variables → Actions → New repository secret
+        Add these three secrets exactly:
+
+        Name: YOUTUBE_CLIENT_ID
+        Value: (Client ID from step 11)
+
+        Name: YOUTUBE_CLIENT_SECRET
+        Value: (Client Secret from step 11)
+
+        Name: YOUTUBE_REFRESH_TOKEN
+        Value: (Refresh token from step 17)
+
+[ ] 19. (Recommended) Verify the channel for custom thumbnails:
+        https://www.youtube.com/verify
+
+
+============================================================
+D. FIRST CLOUD TEST (do this once before trusting autopilot)
+============================================================
+[ ] 20. GitHub → Actions → Make video → Run workflow
+[ ] 21. Inputs:
+        topic = next
+        upload = true
+        skip_source_check = false
+        generate_if_empty = false
+[ ] 22. Wait 20–40 minutes
+[ ] 23. Open the finished run:
+        - Artifact "video-..." has the files if you need them
+        - Summary should show YouTube links + the scheduled times
+[ ] 24. Open YouTube Studio → Content
+        You should see the new long video and Short as Scheduled
+        Long ≈ 18:00 Thailand, Short ≈ 20:00 Thailand
+        (If data is older than 20 days it stays Private with no schedule on purpose)
+
+
+============================================================
+E. AFTER THAT: HANDS-OFF WEEKLY LOOP
+============================================================
+Nothing to click on the laptop.
+
+Automatic calendar (Thailand time):
+  Sun / Tue / Thu / Sat
+    16:00  GitHub starts render
+    ~17:00 Upload finishes (Private + schedule set)
+    18:00  Long video goes Public by itself
+    20:00  Short goes Public by itself
+
+Queue after 001 (already done on laptop):
+  next cloud runs → 002 → 003 → 004 → then need new scripts
+  (or set GEMINI_API_KEY secret and tick generate_if_empty when queue is empty)
+
+Optional after each publish (helps views, not required for autopilot):
+[ ] Pin the comment from YOUTUBE-STUDIO-STEPS.md / state/kits/
+[ ] Reply to early comments
+[ ] In Studio, set the Short's "Related video" to the long video if it is empty
+
+
+============================================================
+F. IF SOMETHING FAILS
+============================================================
+[ ] Actions run red → open the log → re-run workflow
+[ ] Upload skipped → secrets missing or wrong → redo section C
+[ ] Thumbnail missing on YouTube → verify channel (step 19) then upload thumbnail.jpg from the artifact
+[ ] Stays Private forever → check if as_of date is older than 20 days; update facts + script dates
+[ ] Wrong day/time → edit channel.json → publish, and .github/workflows/make-video.yml → schedule, then git push
+
+
+============================================================
+G. FILES YOU WILL USE OFTEN
+============================================================
+auto-pilot.txt                 ← this checklist
+channel.json                   ← 18:00 / 20:00 / which weekdays
+.github/workflows/make-video.yml
+topics/queue.json              ← order of videos
+state/published.json           ← already made (machine)
+state/VIDEOS.md                ← already made (human table)
+state/kits/*.md                ← Studio paste kit per video
+out/package/                   ← last local package (if you rendered on PC)
+
+
+============================================================
+QUICK STATUS FOR YOU RIGHT NOW
+============================================================
+Done on laptop: factory code + video 001
+Still needed for full autopilot: sections B + C + D above
+After D succeeds once: laptop can stay closed

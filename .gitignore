@@ -1,0 +1,8 @@
+out/
+__pycache__/
+*.pyc
+.venv/
+.env
+sample*.mp3
+test.ass
+test-frame.png

@@ -1,0 +1,27 @@
+{
+  "name": "สวัสดิการวัยเก๋า เข้าใจง่าย",
+  "channel_id": "UC5Y9nTVK73bOLlNgrxY0Kng",
+  "channel_url": "https://www.youtube.com/channel/UC5Y9nTVK73bOLlNgrxY0Kng",
+  "voice": "th-TH-PremwadeeNeural",
+  "voice_label": "Premwadee เป็นเสียงไทยประสาทสังเคราะห์ที่เปิดใช้ได้ฟรี ไม่ใช่เสียงของบุคคลจริง",
+  "headline_font": "Kanit",
+  "body_font": "Sarabun",
+  "rate": "-10%",
+  "pitch": "-1Hz",
+  "min_seconds": 720,
+  "max_seconds": 900,
+  "target_seconds": 820,
+  "section_pause_seconds": 0.35,
+  "chars_per_second": 15.03,
+  "category_id": "27",
+  "publish": {
+    "mode": "schedule",
+    "long_time": "18:00",
+    "short_delay_minutes": 120,
+    "utc_offset_hours": 7,
+    "min_lead_minutes": 90,
+    "max_data_age_days": 20,
+    "weekdays": ["sun", "tue", "thu", "sat"]
+  },
+  "gemini_models": ["gemini-2.5-flash", "gemini-2.0-flash"]
+}

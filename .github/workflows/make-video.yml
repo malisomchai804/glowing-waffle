@@ -1,0 +1,88 @@
+name: Make video
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "รหัสบท เช่น 001-bai-yang-cheep-nov หรือ next"
+        default: next
+        required: true
+        type: string
+      upload:
+        description: "อัปขึ้นยูทูบเป็นคลิปส่วนตัว ถ้าตั้งคีย์แล้ว"
+        default: true
+        required: true
+        type: boolean
+      skip_source_check:
+        description: "ข้ามการเปิดเว็บราชการ ใช้เมื่อเว็บบล็อก แต่ต้องตรวจตัวเลขเองก่อนเผยแพร่"
+        default: false
+        required: true
+        type: boolean
+      generate_if_empty:
+        description: "ถ้าคิวว่างและมี GEMINI_API_KEY ให้เขียนบทใหม่"
+        default: false
+        required: true
+        type: boolean
+  # Sunday, Tuesday, Thursday, Saturday at 16:00 Thailand (UTC+7).
+  # Starts early so the long video + Short finish before 18:00 publish time.
+  schedule:
+    - cron: "0 9 * * 0,2,4,6"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: make-video
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install Python packages
+        run: pip install -r requirements.txt
+      - name: Render video
+        env:
+          PYTHONUTF8: "1"
+          TOPIC: ${{ github.event.inputs.topic || 'next' }}
+          UPLOAD: ${{ github.event.inputs.upload == false && 'false' || 'true' }}
+          PUBLISH_MODE: schedule
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          args=(--topic "$TOPIC" --mark)
+          if [ "${UPLOAD}" = "false" ]; then
+            args+=(--no-upload)
+          fi
+          if [ "${{ github.event.inputs.skip_source_check }}" = "true" ]; then
+            args+=(--skip-source-check)
+          fi
+          if [ "${{ github.event.inputs.generate_if_empty }}" = "true" ]; then
+            args+=(--generate-if-empty)
+          fi
+          python -u -m src.make_video "${args[@]}"
+      - name: Upload video package
+        if: always() && hashFiles('out/package/video.mp4') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-${{ github.run_id }}
+          path: out/package/
+          retention-days: 30
+      - name: Save queue state
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state topics/queue.json topics/scripts
+          git diff --cached --quiet || git commit -m "Record rendered welfare video"
+          git push
