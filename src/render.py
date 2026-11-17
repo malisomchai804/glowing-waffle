@@ -99,6 +99,56 @@ def make_backgrounds(folder: Path, vertical: bool = False) -> dict[str, Path]:
     return paths
 
 
+LOOP_SECONDS = 12
+
+
+def make_loop_background(folder: Path, vertical: bool = False) -> Path:
+    """A 12-second seamless loop: warm paper with three soft colour glows drifting slowly,
+    plus the dark footer band. Header plates and text are drawn on top by the ASS layer."""
+    folder.mkdir(parents=True, exist_ok=True)
+    width, height = _frame(vertical)
+    foot_h = V_FOOT_H if vertical else FOOT_H
+    dest = folder / ("loop-v.mp4" if vertical else "loop.mp4")
+    glow = folder / "glow.png"
+    size = 900 if vertical else 1000
+    half = size // 2
+    run_ffmpeg(
+        [
+            "ffmpeg", "-y", "-f", "lavfi", "-i", f"color=c=black:s={size}x{size}:d=1",
+            "-vf",
+            "format=rgba,geq="
+            "r='255':g='255':b='255':"
+            f"a='255*pow(max(0,1-hypot(X-{half},Y-{half})/{half}),2.2)'",
+            "-frames:v", "1", str(glow),
+        ]
+    )
+    # Each glow is tinted, very faint, and moves on a sine with a 12 s period, so the loop has no seam.
+    tints = [("0.22", "0xF2C66B", "0.55", "0.35"), ("0.16", "0x8CC7BE", "0.2", "0.75"), ("0.20", "0xF5B48A", "0.85", "0.8")]
+    inputs = ["-f", "lavfi", "-i", f"color=c={PAPER}:s={width}x{height}:r=30:d={LOOP_SECONDS}"]
+    graph = []
+    last = "[0:v]"
+    for index, (opacity, colour, fx, fy) in enumerate(tints, start=1):
+        inputs += ["-loop", "1", "-framerate", "30", "-t", str(LOOP_SECONDS), "-i", str(glow)]
+        graph.append(
+            f"[{index}:v]format=rgba,colorchannelmixer=aa={opacity},"
+            f"lutrgb=r='val*0+{int(colour[2:4], 16)}':g='val*0+{int(colour[4:6], 16)}':b='val*0+{int(colour[6:8], 16)}'[g{index}]"
+        )
+        phase = index * 2.1
+        x = f"{width}*{fx}-{half}+{int(width * 0.12)}*sin(2*PI*t/{LOOP_SECONDS}+{phase:.2f})"
+        y = f"{height}*{fy}-{half}+{int(height * 0.08)}*cos(2*PI*t/{LOOP_SECONDS}+{phase:.2f})"
+        graph.append(f"{last}[g{index}]overlay=x='{x}':y='{y}':eval=frame[b{index}]")
+        last = f"[b{index}]"
+    graph.append(f"{last}drawbox=x=0:y={height - foot_h}:w={width}:h={foot_h}:color={INK}:t=fill,format=yuv420p[v]")
+    run_ffmpeg(
+        [
+            "ffmpeg", "-y", *inputs, "-filter_complex", ";".join(graph), "-map", "[v]",
+            "-t", str(LOOP_SECONDS), "-r", "30", "-c:v", "libx264", "-preset", "medium",
+            "-crf", "16", "-pix_fmt", "yuv420p", str(dest),
+        ]
+    )
+    return dest
+
+
 def _footer(as_of: str) -> str:
     return f"ไม่ใช่หน่วยงานรัฐ  ·  เสียงสังเคราะห์  ·  ข้อมูล ณ {as_of}"
 
@@ -219,12 +269,32 @@ def wrap_lines(lines: list[str], width: int) -> list[str]:
     return wrapped
 
 
-def write_ass(path: Path, pieces: list[dict], as_of: str, vertical: bool = False) -> None:
+def write_ass(
+    path: Path,
+    pieces: list[dict],
+    as_of: str,
+    vertical: bool = False,
+    total: float | None = None,
+    animate: bool = True,
+) -> list[tuple[float, str]]:
+    """Write the on-screen cards. Returns sound-effect cues (seconds, name) when animated."""
     width, height = _frame(vertical)
     if vertical:
         sizes = {"Head": 72, "Body": 64, "Big": 150, "Foot": 38, "Kicker": 60}
     else:
         sizes = {"Head": 64, "Body": 54, "Big": 116, "Foot": 34, "Kicker": 48}
+    cues: list[tuple[float, str]] = []
+    if animate:
+        from src import motion
+
+        total = total if total is not None else (pieces[-1]["end"] if pieces else 0.0)
+        events, cues = motion.timeline_events(pieces, total, vertical, as_of)
+        for piece in pieces:
+            piece_events, piece_cues = motion.piece_events(piece, as_of, vertical, _fit_rows, wrap_lines)
+            events.extend(piece_events)
+            cues.extend(piece_cues)
+    else:
+        events = [event for piece in pieces for event in _events_for(piece, as_of, vertical)]
     header = f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: {width}
@@ -239,16 +309,27 @@ Style: Body,Sarabun,{sizes['Body']},&H000C121A,&H000000FF,&H00000000,&H00000000,
 Style: Big,Kanit,{sizes['Big']},&H00474C0E,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,40,40,0,1
 Style: Foot,Sarabun,{sizes['Foot']},&H00EAF6FF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,2,20,20,16,1
 Style: Kicker,Kanit,{sizes['Kicker']},&H00474C0E,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,8,40,40,20,1
+Style: Shape,Sarabun,20,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
+Style: Mark,Kanit,64,&H000C121A,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
+Style: Pill,Kanit,40,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
-    lines = [
-        header.rstrip(),
-        *[event for piece in pieces for event in _events_for(piece, as_of, vertical)],
-        "",
-    ]
-    path.write_text("\n".join(lines), encoding="utf-8-sig")
+    # Layers 6+ (the wipe transition) go in a second file drawn above the logo.
+    top = [event for event in events if event.startswith(("Dialogue: 6,", "Dialogue: 7,"))]
+    rest = [event for event in events if not event.startswith(("Dialogue: 6,", "Dialogue: 7,"))]
+    path.write_text("\n".join([header.rstrip(), *rest, ""]), encoding="utf-8-sig")
+    top_path = overlay_ass_path(path)
+    if top:
+        top_path.write_text("\n".join([header.rstrip(), *top, ""]), encoding="utf-8-sig")
+    elif top_path.exists():
+        top_path.unlink()
+    return cues
+
+
+def overlay_ass_path(path: Path) -> Path:
+    return path.with_name(path.stem + "-top.ass")
 
 
 def write_srt(path: Path, cues: list[tuple[float, float, str]]) -> None:
@@ -339,16 +420,8 @@ def _tone_bed(
 
 
 def _section_gap(dest: Path, seconds: float) -> None:
-    # A soft low knock in the pause, finished before the next sentence.
-    _tone_bed(
-        dest,
-        seconds,
-        [
-            (174.6, 0.0, 0.20, 0.16),
-            (349.2, 0.0, 0.12, 0.05),
-        ],
-        air=False,
-    )
+    # Plain silence: the whoosh of the slide transition is mixed in later (src/sound.py).
+    _silence(dest, seconds)
 
 
 def _require_logo() -> None:
@@ -527,23 +600,27 @@ def _encode_body(
     else:
         size = 148
         place = "x=28:y='16+5*sin(2*PI*t/6)'"
+    # Background -> cards (header plates, text) -> logo -> wipe transition on top.
+    fonts = filter_path(FONTS, work)
+    top = overlay_ass_path(ass)
+    finish = f"[withlogo]ass={filter_path(top, work)}:fontsdir={fonts}[v]" if top.exists() else "[withlogo]null[v]"
     graph = (
         f"[2:v]scale={size}:{size}:flags=lanczos,"
         f"pad={size + 16}:{size + 16}:8:8:0xFFFFFF,"
         f"pad={size + 28}:{size + 28}:6:6:{GOLD},setsar=1,format=rgba[lg];"
-        f"[0:v]fps=30,setsar=1,ass={filter_path(ass, work)}:fontsdir={filter_path(FONTS, work)}[base];"
-        f"[base][lg]overlay={place}:eval=frame:eof_action=repeat[v]"
+        f"[0:v]fps=30,setsar=1,ass={filter_path(ass, work)}:fontsdir={fonts}[base];"
+        f"[base][lg]overlay={place}:eval=frame:eof_action=repeat[withlogo];"
+        + finish
     )
+    if listing.suffix == ".mp4":
+        video_in = ["-stream_loop", "-1", "-i", str(listing)]
+    else:
+        video_in = ["-f", "concat", "-safe", "0", "-i", str(listing)]
     run_ffmpeg(
         [
             "ffmpeg",
             "-y",
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            str(listing),
+            *video_in,
             "-i",
             str(audio),
             "-i",
@@ -562,10 +639,8 @@ def _encode_body(
             "libx264",
             "-preset",
             "veryfast",
-            "-tune",
-            "stillimage",
             "-crf",
-            "18",
+            "20",
             "-pix_fmt",
             "yuv420p",
             "-c:a",
@@ -813,20 +888,17 @@ def assemble(
         )
 
     vertical = brief
-    backgrounds = make_backgrounds(work / "bg", vertical)
     ass = work / "cards.ass"
-    write_ass(ass, pieces, script["as_of"], vertical)
-    listing = work / "slides.txt"
-    slide_lines = ["ffconcat version 1.0"]
-    for piece in pieces:
-        bg = backgrounds[piece["layout"]]
-        slide_lines.append(f"file '{bg.resolve().as_posix()}'")
-        slide_lines.append(f"duration {piece['end'] - piece['start']:.3f}")
-    slide_lines.append(f"file '{backgrounds[pieces[-1]['layout']].resolve().as_posix()}'")
-    listing.write_text("\n".join(slide_lines) + "\n", encoding="utf-8")
+    loop = make_loop_background(work / "bg", vertical)
+    sfx = write_ass(ass, pieces, script["as_of"], vertical, total=duration)
+    from src.sound import mix
+
+    scored = work / "voice-scored.wav"
+    mix(audio, scored, sfx, music_level=0.13 if brief else 0.12)
+    audio = scored
 
     body = work / "video-body.mp4"
-    _encode_body(work, listing, ass, audio, body, duration, vertical)
+    _encode_body(work, loop, ass, audio, body, duration, vertical)
     intro = work / "intro.mp4"
     outro = work / "outro.mp4"
     _render_brand_clip(work, intro, "intro", script["as_of"], intro_seconds, vertical)

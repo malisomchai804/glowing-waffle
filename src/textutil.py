@@ -43,7 +43,35 @@ def wrap_thai(text: str, width: int) -> list[str]:
     return lines or [""]
 
 
+def _thai_words(text: str) -> list[str] | None:
+    """Split Thai into words (Thai has no spaces between words). None if PyThaiNLP is missing."""
+    try:
+        from pythainlp.tokenize import word_tokenize
+    except ImportError:
+        return None
+    return [word for word in word_tokenize(text, engine="newmm", keep_whitespace=True) if word]
+
+
 def _wrap_chars(text: str, width: int) -> list[str]:
+    words = _thai_words(text)
+    if words and len(words) > 1:
+        lines: list[str] = []
+        current = ""
+        for word in words:
+            if current and len(current + word) > width:
+                lines.append(current.strip())
+                current = word.lstrip()
+            else:
+                current += word
+        if current.strip():
+            lines.append(current.strip())
+        # A single word longer than the width still has to be cut somewhere.
+        if all(len(line) <= width * 1.25 for line in lines):
+            return lines
+    return _wrap_chars_plain(text, width)
+
+
+def _wrap_chars_plain(text: str, width: int) -> list[str]:
     lines: list[str] = []
     current = ""
     for ch in text:

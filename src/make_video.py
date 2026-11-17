@@ -217,9 +217,17 @@ def publish_slots(script: dict, channel: dict) -> tuple[str | None, str | None, 
     }
     lead = timedelta(minutes=int(rules.get("min_lead_minutes", 90)))
     now = datetime.now(thailand)
+    # Never stack two long videos on one slot (e.g. after a manual run took today's slot).
+    taken = {
+        item.get("publish_at")
+        for item in load(STATE).get("done", [])
+        if isinstance(item, dict) and item.get("publish_at")
+    }
+    fmt = "%Y-%m-%dT%H:%M:%SZ"
     slot = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
-    for _ in range(14):
-        if slot.weekday() in allowed and slot - now >= lead:
+    for _ in range(21):
+        free = slot.astimezone(timezone.utc).strftime(fmt) not in taken
+        if slot.weekday() in allowed and slot - now >= lead and free:
             break
         slot += timedelta(days=1)
         slot = slot.replace(hour=hour, minute=minute, second=0, microsecond=0)
