@@ -6,6 +6,19 @@ import os
 from pathlib import Path
 
 
+def _clean(text: str) -> str:
+    """YouTube rejects titles, descriptions and tags that contain < or >."""
+    return text.replace("<", "(").replace(">", ")")
+
+
+def _fit_bytes(text: str, limit: int) -> str:
+    """YouTube limits descriptions to 5000 bytes; Thai letters are 3 bytes each in UTF-8."""
+    data = text.encode("utf-8")
+    if len(data) <= limit:
+        return text
+    return data[:limit].decode("utf-8", errors="ignore").rstrip()
+
+
 def secrets_ready() -> bool:
     return all(
         os.environ.get(name)
@@ -51,9 +64,9 @@ def upload_video(
         status["publishAt"] = publish_at
     body = {
         "snippet": {
-            "title": title[:100],
-            "description": description[:4900],
-            "tags": tags[:30],
+            "title": _clean(title)[:100],
+            "description": _fit_bytes(_clean(description), 4900),
+            "tags": [_clean(tag) for tag in tags[:30]],
             "categoryId": category_id,
             "defaultLanguage": "th",
             "defaultAudioLanguage": "th",

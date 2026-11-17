@@ -79,7 +79,12 @@ def build_description(
         stamp = "0:00" if not chapters else clock(piece["start"])
         chapters.append(f"{stamp} {group}")
     sources = "\n".join(f"- {item['name']} {item['url']}" for item in script["sources"])
-    warning = ("\n".join(warnings) + "\n\n") if warnings else ""
+    # Viewers only need to know a source could not be re-checked, not the network error.
+    warning = (
+        "หมายเหตุ: รอบนี้เปิดเว็บแหล่งที่มาบางแห่งไม่ได้ จึงใช้ข้อมูลที่ตรวจไว้ล่าสุด\n\n"
+        if warnings
+        else ""
+    )
     voice = "เสียงบรรยายสร้างด้วย AI (text-to-speech)"
     if "gtts" in engines:
         voice += " รอบนี้ใช้เสียงสำรอง เพราะเสียงหลักเชื่อมต่อไม่ได้"
