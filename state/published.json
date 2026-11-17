@@ -22,6 +22,23 @@
       "youtube_id": "",
       "short_youtube_id": "",
       "publish": ""
+    },
+    {
+      "id": "003-how-to-register",
+      "title": "ลงทะเบียนเบี้ยผู้สูงอายุ ไปไหน ใช้เอกสารอะไร",
+      "short_title": "ไฮไลต์ | ลงทะเบียนเบี้ยผู้สูงอายุ ไปไหน ใช้เอกสารอะไร",
+      "as_of": "15 พฤศจิกายน 2569",
+      "rendered_at": "2026-11-17",
+      "seconds": 781.0,
+      "short_seconds": 63.4,
+      "youtube_id": "Jy0LCLgg7qg",
+      "short_youtube_id": "n3JLgIv4nBI",
+      "publish": "ตั้งเวลาเผยแพร่อัตโนมัติ: คลิปยาว 2026-11-19 18:00 คลิปสั้น 2026-11-19 20:00 (เวลาไทย) ยูทูบจะเปลี่ยนจากส่วนตัวเป็นสาธารณะเองเมื่อถึงเวลา",
+      "publish_at": "2026-11-19T11:00:00Z",
+      "short_publish_at": "2026-11-19T13:00:00Z",
+      "playlist_id": "PLQZ_P9X23bdo",
+      "comment_id": "",
+      "short_comment_id": ""
     }
   ]
 }
