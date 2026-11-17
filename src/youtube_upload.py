@@ -88,3 +88,95 @@ def upload_video(
         except Exception as exc:  # noqa: BLE001 - needs the youtube.force-ssl scope
             print(f"อัปซับไตเติลไม่สำเร็จ (อัปเองใน Studio ได้): {exc}")
     return video_id
+
+
+# --- After-upload helpers. Each one is best-effort: a failure prints a note and
+# --- never stops the run, because the video itself is already safely uploaded.
+
+_playlist_cache: dict[str, str] = {}
+
+
+def ensure_playlist(title: str, description: str = "") -> str | None:
+    """Return the id of the channel playlist with this title, creating it public if missing."""
+    if not title:
+        return None
+    if title in _playlist_cache:
+        return _playlist_cache[title]
+    try:
+        youtube = _client()
+        token = None
+        while True:
+            page = youtube.playlists().list(
+                part="snippet", mine=True, maxResults=50, pageToken=token
+            ).execute()
+            for item in page.get("items", []):
+                if item["snippet"]["title"].strip() == title.strip():
+                    _playlist_cache[title] = item["id"]
+                    return item["id"]
+            token = page.get("nextPageToken")
+            if not token:
+                break
+        created = youtube.playlists().insert(
+            part="snippet,status",
+            body={
+                "snippet": {
+                    "title": title[:150],
+                    "description": description[:4900],
+                    "defaultLanguage": "th",
+                },
+                "status": {"privacyStatus": "public"},
+            },
+        ).execute()
+        _playlist_cache[title] = created["id"]
+        print(f"สร้างเพลย์ลิสต์ใหม่: {title}")
+        return created["id"]
+    except Exception as exc:  # noqa: BLE001 - needs the youtube.force-ssl scope
+        print(f"หา/สร้างเพลย์ลิสต์ไม่สำเร็จ (เพิ่มเองใน Studio ได้): {exc}")
+        return None
+
+
+def add_to_playlist(playlist_id: str | None, video_id: str) -> bool:
+    if not playlist_id or not video_id:
+        return False
+    try:
+        _client().playlistItems().insert(
+            part="snippet",
+            body={
+                "snippet": {
+                    "playlistId": playlist_id,
+                    "resourceId": {"kind": "youtube#video", "videoId": video_id},
+                }
+            },
+        ).execute()
+        return True
+    except Exception as exc:  # noqa: BLE001
+        print(f"เพิ่มเข้าเพลย์ลิสต์ไม่สำเร็จ: {exc}")
+        return False
+
+
+def video_status(video_id: str) -> str | None:
+    """'public', 'private', 'unlisted', or None when the video is gone or unreadable."""
+    try:
+        items = _client().videos().list(part="status", id=video_id).execute().get("items", [])
+        return items[0]["status"]["privacyStatus"] if items else None
+    except Exception as exc:  # noqa: BLE001
+        print(f"อ่านสถานะคลิป {video_id} ไม่สำเร็จ: {exc}")
+        return None
+
+
+def post_comment(video_id: str, text: str) -> str | None:
+    """Post a top-level comment as the channel. YouTube's API cannot pin it; pin in Studio."""
+    try:
+        response = _client().commentThreads().insert(
+            part="snippet",
+            body={
+                "snippet": {
+                    "videoId": video_id,
+                    "topLevelComment": {"snippet": {"textOriginal": text[:9000]}},
+                }
+            },
+        ).execute()
+        return response["id"]
+    except Exception as exc:  # noqa: BLE001 - needs the youtube.force-ssl scope
+        print(f"โพสต์คอมเมนต์ไม่สำเร็จ: {exc}")
+        return None

@@ -71,11 +71,49 @@ def check_seo_numbers(script: dict, facts: dict) -> list[str]:
             *entry.get("tags", []),
             *entry.get("hashtags", []),
             entry.get("comment_question", ""),
+            entry.get("playlist", ""),
+            quiz_text(script),
         ]
     )
     allowed = {str(item) for item in facts.get("allowed_numbers") or []}
     bad = unexpected_numbers(blob, allowed, list(facts.get("phone_patterns") or []))
     return [f"topics/seo.json มีตัวเลขนอกแฟ้มข้อเท็จจริง: {', '.join(bad)}"] if bad else []
+
+
+DEFAULT_PLAYLIST = "สวัสดิการผู้สูงอายุ อัปเดตล่าสุด"
+
+
+def playlist_title(script: dict) -> str:
+    seo = load_seo()
+    return topic_seo(script).get("playlist") or seo.get("default_playlist") or DEFAULT_PLAYLIST
+
+
+def quiz_text(script: dict) -> str:
+    """A tap-to-answer quiz for the comment. Answers in comments are a strong engagement signal."""
+    quiz = topic_seo(script).get("quiz") or {}
+    question = (quiz.get("question") or "").strip()
+    options = [option.strip() for option in quiz.get("options") or [] if option.strip()]
+    if not question or len(options) < 2:
+        return ""
+    letters = "ABCD"
+    lines = [f"ควิซ: {question}"]
+    lines += [f"{letters[index]}) {option}" for index, option in enumerate(options[:4])]
+    lines.append("ตอบแค่ตัวอักษร A B หรือ C ในคอมเมนต์ เฉลยอยู่ในคลิป")
+    return "\n".join(lines)
+
+
+def watch_next(published: list[dict], current_id: str, playlist_id: str | None, limit: int = 3) -> str:
+    """Links to earlier uploaded videos and the playlist. Stands in for cards, which the API cannot add."""
+    lines = []
+    for item in reversed(published):
+        if not isinstance(item, dict) or item.get("id") == current_id or not item.get("youtube_id"):
+            continue
+        lines.append(f"- {item.get('title', '')} https://youtu.be/{item['youtube_id']}")
+        if len(lines) >= limit:
+            break
+    if playlist_id:
+        lines.append(f"- ดูทุกตอนในเพลย์ลิสต์ https://www.youtube.com/playlist?list={playlist_id}")
+    return ("ดูต่อ\n" + "\n".join(lines)) if lines else ""
 
 
 def _copy(text: str) -> str:
@@ -118,7 +156,8 @@ Click "Upload file" and choose `thumbnail.jpg`.
 If the button is greyed out, verify the channel first at https://www.youtube.com/verify
 
 ## Step 5. Playlists
-Add to a playlist that fits the topic (for example "เบี้ยยังชีพผู้สูงอายุ"). Create it the first time.
+Automatic when GitHub uploads: added to "{playlist_title(script)}" (created the first time).
+If you upload by hand, add it to that playlist yourself.
 
 ## Step 6. Audience
 Choose: **No, it's not made for kids**.
@@ -151,11 +190,13 @@ Comments: On. Sort by: Top. Show like count: on.
 ## Step 15. Next > Video elements: subtitles
 Add > Upload file > With timing > choose `captions.srt`. Language: Thai.
 
-## Step 16. End screen
-Add, then use a template with **Subscribe** plus **Video: Best for viewer**. Place it over the last 20 seconds (the outro).
+## Step 16. End screen (manual: YouTube's API cannot add end screens)
+After the first video: Studio > the video > Editor > End screen > **Import from video**, pick the previous video, Save. About 20 seconds.
+First time only: build one with **Subscribe** plus **Video: Best for viewer** over the last 20 seconds.
 
-## Step 17. Cards
-Add one card about halfway through, pointing to your most related older video or playlist.
+## Step 17. Cards (manual: YouTube's API cannot add cards)
+The description and comment already link to earlier videos and the playlist ("ดูต่อ").
+Optional: add one card about halfway through, pointing to the playlist.
 
 ## Step 18. Next > Checks
 Wait for the copyright check to finish. It should say "No issues found".
@@ -164,8 +205,10 @@ Wait for the copyright check to finish. It should say "No issues found".
 If GitHub uploaded with auto-publish, Studio already shows **Scheduled for 18:00 Thailand**. Do not change it unless you want a different time.
 If you uploaded by hand, choose Schedule → 18:00 Thailand → Schedule.
 
-## Step 20. Pinned comment (after the video is public)
-Post this as the channel, then click the three dots > Pin:
+## Step 20. Pin the comment (after the video is public)
+GitHub posts this comment (summary + quiz) automatically within about 20 minutes of the video going public.
+YouTube's API cannot pin, so: Studio > Comments > the comment > three dots > **Pin**.
+If you uploaded by hand, post it yourself first:
 {_copy(read("pinned-comment.txt"))}
 
 ## Step 21. Test & compare (optional, after 1 to 2 days)
@@ -198,7 +241,8 @@ Under "Related video", choose the long video. A button to the full video appears
 Public, or schedule it 1 to 2 hours after the long video.
 
 ## Step 29. Short pinned comment
-Replace the link with the long video's link, post it, then pin it:
+Posted automatically after the Short goes public (with the long video's link). Pin it in Studio.
+If you uploaded by hand, replace the link with the long video's link, post it, then pin it:
 {_copy(read("short/pinned-comment.txt"))}
 
 ---
@@ -211,8 +255,9 @@ Reply to every comment in the first one to two hours.
 ## Step 31. Share
 Send the long video to family LINE groups and Facebook groups for older people, with one sentence about what it answers, not just the link.
 
-## Step 32. Community post
-Post the thumbnail with one question, for example the one in the pinned comment.
+## Step 32. Community post (quiz)
+Community tab > Create post > **Quiz**, and use the quiz from the pinned comment, with the right answer marked.
+Or post the thumbnail with the question from the pinned comment.
 
 ## Step 33. Check the numbers
 After 48 hours: Studio > Analytics > the video. If impressions click-through rate is under about 3%, change the title to a backup title. If average view duration drops sharply in the first 30 seconds, note it for the next script.

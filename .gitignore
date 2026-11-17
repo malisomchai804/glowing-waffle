@@ -6,3 +6,8 @@ __pycache__/
 sample*.mp3
 test.ass
 test-frame.png
+
+# Never commit keys
+json-authid-secret-id-token-info.txt
+*secret*.txt
+client_secret*.json

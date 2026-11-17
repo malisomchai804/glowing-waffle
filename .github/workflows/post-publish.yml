@@ -1,0 +1,42 @@
+name: Comment after publish
+
+on:
+  workflow_dispatch:
+  # 18:20, 20:20 and 22:20 Thailand (UTC+7): just after the long video (18:00)
+  # and the Short (20:00) go public. Each run is cheap and does nothing if there is no work.
+  schedule:
+    - cron: "20 11,13,15 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: make-video
+  cancel-in-progress: false
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Python packages
+        run: pip install -r requirements.txt
+      - name: Post comments on newly public videos
+        env:
+          PYTHONUTF8: "1"
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: python -u -m src.post_publish
+      - name: Save comment state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state
+          git diff --cached --quiet || git commit -m "Record posted comments"
+          git pull --rebase
+          git push

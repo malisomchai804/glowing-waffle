@@ -65,6 +65,7 @@ def build_description(
     warnings: list[str],
     engines: list[str],
     channel: dict,
+    more: str = "",
 ) -> str:
     from src.seo import build_hashtags
 
@@ -90,6 +91,8 @@ def build_description(
         f"ข้อมูล ณ {script['as_of']}\n{warning}"
         "มีคลิปสั้นสรุปไฮไลต์ของเรื่องนี้ คู่กับคลิปเต็ม\n\n"
         f"สารบัญ\n" + "\n".join(chapters) + "\n\n"
+        + (f"{more}\n\n" if more else "")
+        +
         f"แหล่งที่มา\n{sources}\n\n"
         "ช่องนี้ไม่ใช่หน่วยงานรัฐ ไม่เคยขอข้อมูลส่วนตัว เลขบัตรประชาชน รหัส OTP หรือให้โอนเงินใดๆ\n"
         "หากมีผู้แอบอ้างชื่อช่องติดต่อท่าน โปรดอย่าหลงเชื่อ\n"
@@ -108,22 +111,25 @@ def _recap_lines(script: dict) -> list[str]:
     return []
 
 
-def build_comment(script: dict) -> str:
-    from src.seo import topic_seo
+def build_comment(script: dict, more: str = "") -> str:
+    from src.seo import quiz_text, topic_seo
 
     recap = "\n".join(f"- {line}" for line in _recap_lines(script))
     question = topic_seo(script).get(
         "comment_question",
         "ที่บ้านเคยเจอโพสต์หรือข้อความเรื่องนี้ไหมคะ เล่าให้ฟังได้ในคอมเมนต์",
     )
+    quiz = quiz_text(script)
     return (
         f"สรุปสั้น ข้อมูล ณ {script['as_of']}\n"
         + (f"{recap}\n\n" if recap else "\n")
+        + (f"{quiz}\n\n" if quiz else "")
         + f"{question}\n"
         "ขอความกรุณาอย่าพิมพ์เลขบัตรประชาชน เบอร์โทร หรือเลขบัญชีในคอมเมนต์นะคะ\n\n"
         "ถ้าหน่วยงานรัฐปรับตัวเลขหลังวันนี้ เราจะมาแก้ไขในคอมเมนต์นี้\n"
         "ช่องนี้ไม่ใช่หน่วยงานรัฐ ไม่ขอเลขบัตรประชาชน รหัส OTP และไม่มีทางให้โอนเงิน\n"
         "ถ้าคลิปนี้ช่วยได้ ฝากกดติดตาม แล้วส่งต่อให้คนในบ้านด้วยนะคะ"
+        + (f"\n\n{more}" if more else "")
     )
 
 
@@ -354,13 +360,27 @@ def main() -> int:
     )
     youtube_id = ""
     short_id = ""
+    upload_extra: dict = {}
     upload = not args.no_upload and not args.smoke and os.environ.get("UPLOAD", "true").lower() != "false"
     publish_note = ""
     if upload:
         from src.youtube_upload import secrets_ready, upload_video
 
         if secrets_ready():
+            from src.seo import playlist_title, watch_next
+            from src.youtube_upload import add_to_playlist, ensure_playlist
+
             long_at, short_at, publish_note = publish_slots(script, channel)
+            playlist_id = ensure_playlist(
+                playlist_title(script),
+                f"รวมคลิปจากช่อง {channel['name']} อธิบายสวัสดิการให้เข้าใจง่าย พร้อมแหล่งที่มา",
+            )
+            more = watch_next(state.get("done", []), script["id"], playlist_id)
+            description = build_description(
+                script, result["pieces"], warnings, result["engines"], channel, more
+            )
+            (package / "description.txt").write_text(description, encoding="utf-8")
+            (package / "pinned-comment.txt").write_text(build_comment(script, more), encoding="utf-8")
             youtube_id = upload_video(
                 video,
                 thumbnail,
@@ -385,6 +405,15 @@ def main() -> int:
                 publish_at=short_at,
                 captions=package / "short" / "captions.srt",
             )
+            add_to_playlist(playlist_id, youtube_id)
+            add_to_playlist(playlist_id, short_id)
+            upload_extra = {
+                "publish_at": long_at or "",
+                "short_publish_at": short_at or "",
+                "playlist_id": playlist_id or "",
+                "comment_id": "",
+                "short_comment_id": "",
+            }
             write_summary(
                 f"อัปแล้ว: https://youtu.be/{youtube_id} และคลิปสั้น https://youtube.com/shorts/{short_id}\n"
                 f"{publish_note}"
@@ -405,6 +434,7 @@ def main() -> int:
                 "youtube_id": youtube_id,
                 "short_youtube_id": short_id,
                 "publish": publish_note,
+                **upload_extra,
             }
         )
     return 0
