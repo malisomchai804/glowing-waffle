@@ -177,6 +177,9 @@ def write_log(state: dict) -> None:
             f"{long_link} | {short_link} | {item.get('publish', '')} |"
         )
     (STATE.parent / "VIDEOS.md").write_text("\n".join(rows) + "\n", encoding="utf-8")
+    from src.todo import write_todo
+
+    write_todo(state, STATE.parent)
 
 
 def _write_short_package(folder: Path, short: dict, result: dict, script: dict, channel: dict, full_url: str) -> str:
