@@ -1,7 +1,7 @@
 # Manual YouTube jobs
 
 Only the things YouTube's API cannot do. Everything else (upload, title, description, tags, thumbnail, captions, playlist, schedule, comments) is automatic.
-Videos stay here until 10 days after they go public. Times are Thailand time. Updated Wed 18 Nov 09:43.
+Videos stay here until 10 days after they go public. Times are Thailand time. Updated Thu 19 Nov 17:10.
 
 About 5 minutes per video. Do the long video after it goes public (18:00), the Short after 20:00.
 
