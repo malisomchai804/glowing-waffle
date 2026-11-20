@@ -23,10 +23,11 @@ on:
         default: false
         required: true
         type: boolean
-  # Sunday, Tuesday, Thursday, Saturday at 16:00 Thailand (UTC+7).
-  # Starts early so the long video + Short finish before 18:00 publish time.
+  # Sunday, Tuesday, Thursday, Saturday at 13:00 Thailand (UTC+7).
+  # Starts 5 h early: GitHub often starts cron runs 30-60 min late, and the
+  # 18:00 slot is only used if upload finishes 90+ min before it.
   schedule:
-    - cron: "0 9 * * 0,2,4,6"
+    - cron: "0 6 * * 0,2,4,6"
 
 permissions:
   contents: write
@@ -52,7 +53,7 @@ jobs:
         env:
           PYTHONUTF8: "1"
           TOPIC: ${{ github.event.inputs.topic || 'next' }}
-          UPLOAD: ${{ github.event.inputs.upload == false && 'false' || 'true' }}
+          UPLOAD: ${{ github.event.inputs.upload || 'true' }}
           PUBLISH_MODE: schedule
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
