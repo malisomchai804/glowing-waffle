@@ -65,6 +65,25 @@ def main() -> int:
                     f"คอมเมนต์แล้ว https://www.youtube.com/watch?v={video_id}&lc={comment_id} "
                     "(ปักหมุดเองใน Studio: Comments > จุดสามจุด > Pin)"
                 )
+        for extra in entry.get("extra_shorts") or []:
+            video_id = extra.get("youtube_id")
+            if not video_id or extra.get("comment_id"):
+                continue
+            status = video_status(video_id)
+            if status != "public":
+                print(f"{video_id}: ยังเป็น {status} รอเผยแพร่ก่อนค่อยคอมเมนต์")
+                continue
+            from src.short_video import build_short_comment
+
+            try:
+                text = build_short_comment(load(script_path(entry["id"])), f"https://youtu.be/{entry['youtube_id']}")
+            except FileNotFoundError:
+                continue
+            comment_id = post_comment(video_id, text)
+            if comment_id:
+                extra["comment_id"] = comment_id
+                changed = True
+                write_summary(f"คอมเมนต์แล้ว https://www.youtube.com/watch?v={video_id}&lc={comment_id}")
     if changed:
         save(STATE, state)
         write_log(state)

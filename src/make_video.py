@@ -196,6 +196,76 @@ def _write_short_package(folder: Path, short: dict, result: dict, script: dict, 
     return description
 
 
+def _render_extras(script: dict, highlight: dict, channel: dict, facts: dict, work: Path) -> list:
+    """Quiz + focus Shorts. A failure here only drops that Short, never the main video."""
+    from src.render import assemble
+    from src.short_video import build_extra_shorts, guard_numbers
+
+    wanted = {item.get("kind") for item in (channel.get("publish") or {}).get("extra_shorts") or []}
+    made = []
+    for short in build_extra_shorts(script, channel, highlight):
+        if short["kind"] not in wanted:
+            continue
+        try:
+            guard_numbers(short, facts)
+            result = assemble(short, work / f"short-{short['kind']}", channel, limit_sections=None, fit=False, brief=True)
+            made.append((short, result))
+        except Exception as error:  # noqa: BLE001 - optional extra, keep the run alive
+            print(f"ข้ามคลิปสั้นเสริม {short['kind']}: {error}")
+    return made
+
+
+def _upload_extras(extras, package, script, channel, full_url, tags, long_at, playlist_id) -> list[dict]:
+    """Upload each extra Short a set number of hours after the long video goes public."""
+    from src.youtube_upload import add_to_playlist, upload_video
+
+    hours = {
+        item.get("kind"): float(item.get("after_hours", 0))
+        for item in (channel.get("publish") or {}).get("extra_shorts") or []
+    }
+    fmt = "%Y-%m-%dT%H:%M:%SZ"
+    uploaded = []
+    for short, _result in extras:
+        folder = package / f"short-{short['kind']}"
+        at = None
+        if long_at:
+            at = (datetime.strptime(long_at, fmt) + timedelta(hours=hours.get(short["kind"], 0))).strftime(fmt)
+        try:
+            description = _write_short_package_text(folder, short, script, channel, full_url)
+            video_id = upload_video(
+                folder / "video.mp4",
+                None,
+                short["title"],
+                description,
+                ["shorts", *tags][:15],
+                channel["category_id"],
+                publish_at=at,
+                captions=folder / "captions.srt",
+            )
+        except Exception as error:  # noqa: BLE001 - e.g. daily quota; main video is already up
+            print(f"อัปคลิปสั้นเสริม {short['kind']} ไม่สำเร็จ: {error}")
+            continue
+        try:
+            add_to_playlist(playlist_id, video_id)
+        except Exception as error:  # noqa: BLE001
+            print(f"ใส่เพลย์ลิสต์ไม่สำเร็จ {video_id}: {error}")
+        uploaded.append(
+            {"kind": short["kind"], "title": short["title"], "youtube_id": video_id,
+             "publish_at": at or "", "comment_id": ""}
+        )
+        write_summary(f"อัปคลิปสั้นเสริม ({short['kind']}): https://youtube.com/shorts/{video_id}")
+    return uploaded
+
+
+def _write_short_package_text(folder: Path, short: dict, script: dict, channel: dict, full_url: str) -> str:
+    from src.short_video import build_short_comment, build_short_description
+
+    description = build_short_description(script, short, channel, full_url)
+    (folder / "description.txt").write_text(description, encoding="utf-8")
+    (folder / "pinned-comment.txt").write_text(build_short_comment(script, full_url), encoding="utf-8")
+    return description
+
+
 _WEEKDAY = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
 
 
@@ -344,6 +414,7 @@ def main() -> int:
         fit=False,
         brief=True,
     )
+    extras = [] if args.smoke else _render_extras(script, short_script, channel, facts, work)
     from src.seo import build_hashtags, build_tags, title_options
 
     package = ROOT / "out" / "package"
@@ -367,6 +438,8 @@ def main() -> int:
 
     full_url = channel["channel_url"]
     _write_short_package(package / "short", short_script, short_result, script, channel, full_url)
+    for short, short_res in extras:
+        _write_short_package(package / f"short-{short['kind']}", short, short_res, script, channel, full_url)
 
     seconds = result["audio_seconds"]
     short_seconds = short_result["audio_seconds"]
@@ -429,6 +502,9 @@ def main() -> int:
                 "playlist_id": playlist_id or "",
                 "comment_id": "",
                 "short_comment_id": "",
+                "extra_shorts": _upload_extras(
+                    extras, package, script, channel, full_url, tags, long_at, playlist_id
+                ),
             }
             write_summary(
                 f"อัปแล้ว: https://youtu.be/{youtube_id} และคลิปสั้น https://youtube.com/shorts/{short_id}\n"

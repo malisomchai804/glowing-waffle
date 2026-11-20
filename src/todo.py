@@ -92,6 +92,27 @@ def _video_block(item: dict, previous: dict | None) -> list[str]:
                 f"- [ ] **Pin the comment**: GitHub posts it about 20 min after {_say(short_live)}. "
                 f"Then https://studio.youtube.com/video/{sid}/comments → three dots → **Pin**"
             )
+    names = {"focus": "Short: one topic", "quiz": "Short: quiz"}
+    for extra in item.get("extra_shorts") or []:
+        xid = extra.get("youtube_id")
+        if not xid:
+            continue
+        lines += [
+            "",
+            f"### Extra {names.get(extra.get('kind'), 'Short')} · public {_say(_when(extra.get('publish_at')))}",
+            f"- [ ] **Related video**: https://studio.youtube.com/video/{xid}/edit → **Related video** → "
+            f"choose \"{item.get('title', '')}\" → **Save**",
+        ]
+        if extra.get("comment_id"):
+            lines.append(
+                f"- [ ] **Pin the comment**: open https://www.youtube.com/watch?v={xid}&lc={extra['comment_id']} "
+                "→ three dots → **Pin**"
+            )
+        else:
+            lines.append(
+                f"- [ ] **Pin the comment**: GitHub posts it after the Short goes public. "
+                f"Then https://studio.youtube.com/video/{xid}/comments → three dots → **Pin**"
+            )
     quiz = _quiz(item["id"])
     if quiz:
         letters = "ABCD"

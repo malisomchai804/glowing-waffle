@@ -21,7 +21,11 @@
     "utc_offset_hours": 7,
     "min_lead_minutes": 90,
     "max_data_age_days": 20,
-    "weekdays": ["sun", "tue", "thu", "sat"]
+    "weekdays": ["sun", "tue", "thu", "sat"],
+    "extra_shorts": [
+      {"kind": "focus", "after_hours": 13},
+      {"kind": "quiz", "after_hours": 18}
+    ]
   },
   "gemini_models": ["gemini-2.5-flash", "gemini-2.0-flash"]
 }

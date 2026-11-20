@@ -2,10 +2,11 @@ name: Comment after publish
 
 on:
   workflow_dispatch:
-  # 18:20, 20:20 and 22:20 Thailand (UTC+7): just after the long video (18:00)
+  # 07:20, 12:20, 18:20, 20:20 and 22:20 Thailand (UTC+7): just after the extra Shorts
+  # (07:00, 12:00), the long video (18:00)
   # and the Short (20:00) go public. Each run is cheap and does nothing if there is no work.
   schedule:
-    - cron: "20 11,13,15 * * *"
+    - cron: "20 0,5,11,13,15 * * *"
 
 permissions:
   contents: write

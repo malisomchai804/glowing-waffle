@@ -39,13 +39,159 @@ def guard_numbers(short: dict, facts: dict) -> None:
         raise RuntimeError("คลิปสั้นมีตัวเลขนอกแฟ้มข้อเท็จจริง: " + ", ".join(bad[:12]))
 
 
+def build_extra_shorts(script: dict, channel: dict, highlight: dict) -> list[dict]:
+    """Extra Shorts in other formats, each saying something the highlight Short did not.
+
+    quiz:  ask the topic's quiz question, give a beat to think, then reveal the answer.
+    focus: one part of the topic (preferably a warning) explained on its own.
+    Everything comes from the checked script and seo.json, so no new facts are added.
+    """
+    extras = []
+    for maker in (_quiz_short, _focus_short):
+        short = maker(script, channel, highlight)
+        if short:
+            extras.append(short)
+    return extras
+
+
+def _doc(script: dict, kind: str, title: str, lead: str, kicker: str, sections: list[dict]) -> dict:
+    thumb = script.get("thumbnail") or {}
+    return {
+        "id": f"{script['id']}-{kind}",
+        "kind": kind,
+        "title": _fit_title(title),
+        "as_of": script["as_of"],
+        "as_of_iso": script.get("as_of_iso", ""),
+        "tags": list(script.get("tags") or []),
+        "description_lead": lead,
+        "thumbnail": {
+            "kicker": kicker,
+            "title": thumb.get("title") or "ดูคลิปเต็ม",
+            "big": thumb.get("big") or "ในช่อง",
+        },
+        "sources": script.get("sources") or [],
+        "sections": sections,
+        "full_title": script["title"],
+    }
+
+
+_ORDINAL = ["หนึ่ง", "สอง", "สาม", "สี่"]
+
+
+def _chunks(text: str, width: int = 18) -> list[str]:
+    """Split at the spaces Thai writers already use, so the card never breaks inside a word."""
+    rows: list[str] = []
+    for word in text.split():
+        if rows and len(rows[-1]) + 1 + len(word) <= width:
+            rows[-1] += " " + word
+        else:
+            rows.append(word)
+    return rows or [text]
+
+
+def _quiz_short(script: dict, channel: dict, highlight: dict) -> dict | None:
+    from src.seo import topic_seo
+
+    quiz = topic_seo(script).get("quiz") or {}
+    question = (quiz.get("question") or "").strip()
+    options = [option.strip() for option in quiz.get("options") or [] if option.strip()][:4]
+    answer_index = "ABCD".find((quiz.get("answer") or "").strip().upper()[:1])
+    if not question or len(options) < 2 or not 0 <= answer_index < len(options):
+        return None
+    # The points card numbers each row 1, 2, 3 by itself, so speak the same numbers.
+    spoken_options = " ".join(
+        f"ข้อที่{_ORDINAL[index]} {option}" for index, option in enumerate(options)
+    )
+    letter = _ORDINAL[answer_index]
+    sections = [
+        {
+            "heading": "ทายก่อนเฉลย",
+            "group": "คำถาม",
+            "layout": "title",
+            "lines": _chunks(question),
+            "narration": (
+                f"สวัสดีค่ะ ช่อง{channel['name']} วันนี้ลองทายก่อนนะคะ {question}"
+            ),
+        },
+        {
+            "heading": "เลือกข้อไหนดี",
+            "group": "ตัวเลือก",
+            "layout": "points",
+            "lines": options,
+            "narration": f"{spoken_options} ลองตอบในใจก่อนค่ะ หนึ่ง สอง สาม",
+        },
+        {
+            "heading": f"เฉลย ข้อที่{letter}",
+            "group": "เฉลย",
+            "layout": "title",
+            "lines": _chunks(options[answer_index]),
+            "narration": (
+                f"เฉลยค่ะ ข้อที่{letter} {options[answer_index]} "
+                "พิมพ์ตอบในคอมเมนต์ได้เลยว่าคุณตอบถูกไหมคะ"
+            ),
+        },
+        _cta(script, channel["name"]),
+    ]
+    return _doc(
+        script,
+        "quiz",
+        f"ทายก่อนเฉลย | {question}",
+        f"ควิซจากคลิปเต็มเรื่อง {script['title']}",
+        "ทายก่อนเฉลย",
+        sections,
+    )
+
+
+def _focus_short(script: dict, channel: dict, highlight: dict) -> dict | None:
+    used = {section["heading"] for section in highlight.get("sections") or []}
+    groups: dict[str, list[dict]] = {}
+    for section in script["sections"]:
+        if _skip(section) or section["heading"] in used or section.get("layout") in ("title", "end"):
+            continue
+        groups.setdefault(section.get("group") or section["heading"], []).append(section)
+    if not groups:
+        return None
+
+    # Prefer a warning group, then the group with the most unused sections.
+    def score(item: tuple[str, list[dict]]) -> tuple[int, int]:
+        name, sections = item
+        warns = sum(1 for section in sections if section.get("layout") == "warning")
+        return (warns, len(sections))
+
+    group, chosen = max(groups.items(), key=score)
+    chosen = chosen[:3]
+    spoken = []
+    for index, section in enumerate(chosen):
+        item = _spoken(section, False, channel["name"])
+        if index == 0:
+            item["narration"] = f"สวัสดีค่ะ ช่อง{channel['name']} เรื่องนี้ต้องรู้ค่ะ {group} " + item["narration"]
+        spoken.append(item)
+    spoken.append(_cta(script, channel["name"]))
+    warning = any(section.get("layout") == "warning" for section in chosen)
+    kicker = "ระวัง" if warning else "ต้องรู้"
+    label = f"{group}!" if group.startswith(kicker) else f"{kicker}! {group}"
+    return _doc(
+        script,
+        "focus",
+        f"{label} | {script['title']}",
+        f"เจาะเรื่อง{group} จากคลิปเต็มเรื่อง {script['title']}",
+        kicker,
+        spoken,
+    )
+
+
+def _fit_title(title: str) -> str:
+    return title if len(title) <= 100 else title[:99].rstrip() + "…"
+
+
 def build_short_description(script: dict, short: dict, channel: dict, full_url: str) -> str:
     from src.seo import build_hashtags
 
     hashtags = " ".join(["#shorts", *build_hashtags(script)[:4]])
     sources = "\n".join(f"- {item['name']} {item['url']}" for item in script.get("sources") or [])
+    lead = short.get("description_lead") or f"ไฮไลต์จากคลิปเต็มเรื่อง {script['title']}"
     return (
-        f"ไฮไลต์จากคลิปเต็มเรื่อง {script['title']}\n\n"
+        f"{lead}\n\n"
         "คลิปนี้สรุปเฉพาะจุดสำคัญ ไม่ได้ลงรายละเอียดทั้งหมด\n"
         f"ดูคลิปเต็มได้ที่ลิงก์นี้\n{full_url}\n"
         f"กดติดตามช่อง\n{channel['channel_url']}?sub_confirmation=1\n\n"
