@@ -1,7 +1,7 @@
 # Manual YouTube jobs
 
 Only the things YouTube's API cannot do. Everything else (upload, title, description, tags, thumbnail, captions, playlist, schedule, comments) is automatic.
-Videos stay here until 10 days after they go public. Times are Thailand time. Updated Fri 20 Nov 14:31.
+Videos stay here until 10 days after they go public. Times are Thailand time. Updated Sat 21 Nov 13:59.
 
 About 5 minutes per video. Do the long video after it goes public (18:00), the Short after 20:00.
 
@@ -78,5 +78,50 @@ Option C
 
 ### Check (optional)
 - [ ] Sat 21 Nov 18:00: https://studio.youtube.com/video/FEw94j17F1s/analytics → if click-through rate is under about 3 %, change the title to a backup title (see [kit](kits/005-home-repair-60000.md), step 2)
+
+---
+
+## Sat 21 Nov 18:00 · เงิน 10,000 สิ้นปี เบี้ยพิเศษ 3,000 จริงไหม เช็กข่าวผู้สูงอายุ พ.ย. 69
+
+Public from **Sat 21 Nov 18:00** · Long: https://youtu.be/meXzI5rgs8s · Short: https://youtube.com/shorts/Zvf7rQC7qKk
+
+### Long video
+- [ ] **Pin the comment**: GitHub posts it about 20 min after Sat 21 Nov 18:00. Then https://studio.youtube.com/video/meXzI5rgs8s/comments → three dots → **Pin**
+- [ ] **End screen**: https://studio.youtube.com/video/meXzI5rgs8s/editor → End screen → **Import from video** → pick "เงินซ่อมบ้านผู้สูงอายุ 60,000 บาท ใครได้จริง ยื่นที่ไหน ลูกช่วยยังไง" → **Save**
+- [ ] *(optional)* **Card**: same editor → Cards → **Playlist** at about the middle of the video
+
+### Short
+- [ ] **Related video**: https://studio.youtube.com/video/Zvf7rQC7qKk/edit → **Related video** → choose "เงิน 10,000 สิ้นปี เบี้ยพิเศษ 3,000 จริงไหม เช็กข่าวผู้สูงอายุ พ.ย. 69" → **Save**
+- [ ] **Pin the comment**: GitHub posts it about 20 min after Sat 21 Nov 20:00. Then https://studio.youtube.com/video/Zvf7rQC7qKk/comments → three dots → **Pin**
+
+### Extra Short: quiz · public Sun 22 Nov 12:00
+- [ ] **Related video**: https://studio.youtube.com/video/dHZSrYMWuhw/edit → **Related video** → choose "เงิน 10,000 สิ้นปี เบี้ยพิเศษ 3,000 จริงไหม เช็กข่าวผู้สูงอายุ พ.ย. 69" → **Save**
+- [ ] **Pin the comment**: GitHub posts it after the Short goes public. Then https://studio.youtube.com/video/dHZSrYMWuhw/comments → three dots → **Pin**
+
+### Extra Short: one topic · public Sun 22 Nov 07:00
+- [ ] **Related video**: https://studio.youtube.com/video/_k6AFumqzFI/edit → **Related video** → choose "เงิน 10,000 สิ้นปี เบี้ยพิเศษ 3,000 จริงไหม เช็กข่าวผู้สูงอายุ พ.ย. 69" → **Save**
+- [ ] **Pin the comment**: GitHub posts it after the Short goes public. Then https://studio.youtube.com/video/_k6AFumqzFI/comments → three dots → **Pin**
+
+### Community quiz (after the video is public)
+- [ ] YouTube → **Create** → **Post** → **Quiz**, paste these, tick the ✅ answer, Post:
+
+```text
+มีคนโทรมาบอกว่ายายมีเงินค้างรับ 10,000 บาท แต่ต้องโอนค่าปลดล็อกก่อน ควรทำอย่างไร
+```
+Option A
+```text
+โอนไปก่อนนิดเดียว จะได้รับเงินเร็ว
+```
+Option B ✅ correct
+```text
+วางสาย ไม่โอน แล้วไปสอบถามที่ อปท. เอง
+```
+Option C
+```text
+ส่งรูปบัตรประชาชนให้เขาตรวจแทน
+```
+
+### Check (optional)
+- [ ] Mon 23 Nov 18:00: https://studio.youtube.com/video/meXzI5rgs8s/analytics → if click-through rate is under about 3 %, change the title to a backup title (see [kit](kits/006-fake-money-nov-2569.md), step 2)
 
 ---

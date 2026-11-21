@@ -43,6 +43,11 @@ https://www.youtube.com/channel/UC5Y9nTVK73bOLlNgrxY0Kng?sub_confirmation=1
 12:53 ทวนอีกครั้ง
 13:41 ปิดคลิป
 
+ดูต่อ
+- เงินซ่อมบ้านผู้สูงอายุ 60,000 บาท ใครได้จริง ยื่นที่ไหน ลูกช่วยยังไง https://youtu.be/FEw94j17F1s
+- ลงทะเบียนเบี้ยผู้สูงอายุ ไปไหน ใช้เอกสารอะไร https://youtu.be/Jy0LCLgg7qg
+- ดูทุกตอนในเพลย์ลิสต์ https://www.youtube.com/playlist?list=PLXBusUQ3mMDE
+
 แหล่งที่มา
 - ศูนย์ต่อต้านข่าวปลอม 17 พฤศจิกายน 2569 เรื่องเงินผู้สูงอายุช่วงสิ้นปี https://www.antifakenewscenter.com/นโยบายรัฐบาล-ข่าวสาร/giving-away-money-2/
 - ศูนย์ต่อต้านข่าวปลอม (หน้าหลัก สำหรับตรวจข่าวเอง) https://www.antifakenewscenter.com
@@ -137,6 +142,11 @@ C) ส่งรูปบัตรประชาชนให้เขาตร�
 ถ้าหน่วยงานรัฐปรับตัวเลขหลังวันนี้ เราจะมาแก้ไขในคอมเมนต์นี้
 ช่องนี้ไม่ใช่หน่วยงานรัฐ ไม่ขอเลขบัตรประชาชน รหัส OTP และไม่มีทางให้โอนเงิน
 ถ้าคลิปนี้ช่วยได้ ฝากกดติดตาม แล้วส่งต่อให้คนในบ้านด้วยนะคะ
+
+ดูต่อ
+- เงินซ่อมบ้านผู้สูงอายุ 60,000 บาท ใครได้จริง ยื่นที่ไหน ลูกช่วยยังไง https://youtu.be/FEw94j17F1s
+- ลงทะเบียนเบี้ยผู้สูงอายุ ไปไหน ใช้เอกสารอะไร https://youtu.be/Jy0LCLgg7qg
+- ดูทุกตอนในเพลย์ลิสต์ https://www.youtube.com/playlist?list=PLXBusUQ3mMDE
 ```
 
 ## Step 21. Test & compare (optional, after 1 to 2 days)
@@ -161,7 +171,7 @@ Replace the channel link under "ดูคลิปเต็ม" with the long vi
 
 คลิปนี้สรุปเฉพาะจุดสำคัญ ไม่ได้ลงรายละเอียดทั้งหมด
 ดูคลิปเต็มได้ที่ลิงก์นี้
-https://www.youtube.com/channel/UC5Y9nTVK73bOLlNgrxY0Kng
+https://youtu.be/meXzI5rgs8s
 กดติดตามช่อง
 https://www.youtube.com/channel/UC5Y9nTVK73bOLlNgrxY0Kng?sub_confirmation=1
 
@@ -197,7 +207,7 @@ Public, or schedule it 1 to 2 hours after the long video.
 Posted automatically after the Short goes public (with the long video's link). Pin it in Studio.
 If you uploaded by hand, replace the link with the long video's link, post it, then pin it:
 ```text
-ดูคลิปเต็ม: https://www.youtube.com/channel/UC5Y9nTVK73bOLlNgrxY0Kng
+ดูคลิปเต็ม: https://youtu.be/meXzI5rgs8s
 ข้อมูล ณ 17 พฤศจิกายน 2569
 ช่องนี้ไม่ใช่หน่วยงานรัฐ ไม่ขอเลขบัตรประชาชน รหัส OTP และไม่มีทางให้โอนเงิน
 ```

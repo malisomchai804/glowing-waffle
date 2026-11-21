@@ -56,6 +56,39 @@
       "playlist_id": "PLPuw-UvXEDw0",
       "comment_id": "UgxxuY_U4kFW1yPsA114AaABAg",
       "short_comment_id": "UgyPlhuOvcp98myAbc14AaABAg"
+    },
+    {
+      "id": "006-fake-money-nov-2569",
+      "title": "เงิน 10,000 สิ้นปี เบี้ยพิเศษ 3,000 จริงไหม เช็กข่าวผู้สูงอายุ พ.ย. 69",
+      "short_title": "ไฮไลต์ | เงิน 10,000 สิ้นปี เบี้ยพิเศษ 3,000 จริงไหม เช็กข่าวผู้สูงอายุ พ.ย. 69",
+      "as_of": "17 พฤศจิกายน 2569",
+      "rendered_at": "2026-11-21",
+      "seconds": 856.7,
+      "short_seconds": 61.4,
+      "youtube_id": "meXzI5rgs8s",
+      "short_youtube_id": "Zvf7rQC7qKk",
+      "publish": "ตั้งเวลาเผยแพร่อัตโนมัติ: คลิปยาว 2026-11-21 18:00 คลิปสั้น 2026-11-21 20:00 (เวลาไทย) ยูทูบจะเปลี่ยนจากส่วนตัวเป็นสาธารณะเองเมื่อถึงเวลา",
+      "publish_at": "2026-11-21T11:00:00Z",
+      "short_publish_at": "2026-11-21T13:00:00Z",
+      "playlist_id": "PLXBusUQ3mMDE",
+      "comment_id": "",
+      "short_comment_id": "",
+      "extra_shorts": [
+        {
+          "kind": "quiz",
+          "title": "ทายก่อนเฉลย | มีคนโทรมาบอกว่ายายมีเงินค้างรับ 10,000 บาท แต่ต้องโอนค่าปลดล็อกก่อน ควรทำอย่างไร",
+          "youtube_id": "dHZSrYMWuhw",
+          "publish_at": "2026-11-22T05:00:00Z",
+          "comment_id": ""
+        },
+        {
+          "kind": "focus",
+          "title": "ระวังมิจฉาชีพ! | เงิน 10,000 สิ้นปี เบี้ยพิเศษ 3,000 จริงไหม เช็กข่าวผู้สูงอายุ พ.ย. 69",
+          "youtube_id": "_k6AFumqzFI",
+          "publish_at": "2026-11-22T00:00:00Z",
+          "comment_id": ""
+        }
+      ]
     }
   ]
 }
