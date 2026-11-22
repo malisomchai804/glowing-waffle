@@ -1,7 +1,7 @@
 # Manual YouTube jobs
 
 Only the things YouTube's API cannot do. Everything else (upload, title, description, tags, thumbnail, captions, playlist, schedule, comments) is automatic.
-Videos stay here until 10 days after they go public. Times are Thailand time. Updated Sat 21 Nov 21:12.
+Videos stay here until 10 days after they go public. Times are Thailand time. Updated Sun 22 Nov 08:26.
 
 About 5 minutes per video. Do the long video after it goes public (18:00), the Short after 20:00.
 
@@ -100,7 +100,7 @@ Public from **Sat 21 Nov 18:00** · Long: https://youtu.be/meXzI5rgs8s · Short:
 
 ### Extra Short: one topic · public Sun 22 Nov 07:00
 - [ ] **Related video**: https://studio.youtube.com/video/_k6AFumqzFI/edit → **Related video** → choose "เงิน 10,000 สิ้นปี เบี้ยพิเศษ 3,000 จริงไหม เช็กข่าวผู้สูงอายุ พ.ย. 69" → **Save**
-- [ ] **Pin the comment**: GitHub posts it after the Short goes public. Then https://studio.youtube.com/video/_k6AFumqzFI/comments → three dots → **Pin**
+- [ ] **Pin the comment**: open https://www.youtube.com/watch?v=_k6AFumqzFI&lc=UgzF162j1Lz46bQRnqN4AaABAg → three dots → **Pin**
 
 ### Community quiz (after the video is public)
 - [ ] YouTube → **Create** → **Post** → **Quiz**, paste these, tick the ✅ answer, Post:
