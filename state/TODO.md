@@ -1,7 +1,7 @@
 # Manual YouTube jobs
 
 Only the things YouTube's API cannot do. Everything else (upload, title, description, tags, thumbnail, captions, playlist, schedule, comments) is automatic.
-Videos stay here until 10 days after they go public. Times are Thailand time. Updated Sun 22 Nov 13:10.
+Videos stay here until 10 days after they go public. Times are Thailand time. Updated Sun 22 Nov 14:00.
 
 About 5 minutes per video. Do the long video after it goes public (18:00), the Short after 20:00.
 
@@ -123,5 +123,50 @@ Option C
 
 ### Check (optional)
 - [ ] Mon 23 Nov 18:00: https://studio.youtube.com/video/meXzI5rgs8s/analytics → if click-through rate is under about 3 %, change the title to a backup title (see [kit](kits/006-fake-money-nov-2569.md), step 2)
+
+---
+
+## Sun 22 Nov 18:00 · เบี้ยผู้สูงอายุ ธ.ค. 69 เข้า 9 ธ.ค. ไม่ใช่วันที่ 10 ม.ค. 70 เข้าวันไหน
+
+Public from **Sun 22 Nov 18:00** · Long: https://youtu.be/dBl1Lyi0xjo · Short: https://youtube.com/shorts/pPo1jYNU8Ik
+
+### Long video
+- [ ] **Pin the comment**: GitHub posts it about 20 min after Sun 22 Nov 18:00. Then https://studio.youtube.com/video/dBl1Lyi0xjo/comments → three dots → **Pin**
+- [ ] **End screen**: https://studio.youtube.com/video/dBl1Lyi0xjo/editor → End screen → **Import from video** → pick "เงิน 10,000 สิ้นปี เบี้ยพิเศษ 3,000 จริงไหม เช็กข่าวผู้สูงอายุ พ.ย. 69" → **Save**
+- [ ] *(optional)* **Card**: same editor → Cards → **Playlist** at about the middle of the video
+
+### Short
+- [ ] **Related video**: https://studio.youtube.com/video/pPo1jYNU8Ik/edit → **Related video** → choose "เบี้ยผู้สูงอายุ ธ.ค. 69 เข้า 9 ธ.ค. ไม่ใช่วันที่ 10 ม.ค. 70 เข้าวันไหน" → **Save**
+- [ ] **Pin the comment**: GitHub posts it about 20 min after Sun 22 Nov 20:00. Then https://studio.youtube.com/video/pPo1jYNU8Ik/comments → three dots → **Pin**
+
+### Extra Short: quiz · public Mon 23 Nov 12:00
+- [ ] **Related video**: https://studio.youtube.com/video/Kf4bs3yhiVY/edit → **Related video** → choose "เบี้ยผู้สูงอายุ ธ.ค. 69 เข้า 9 ธ.ค. ไม่ใช่วันที่ 10 ม.ค. 70 เข้าวันไหน" → **Save**
+- [ ] **Pin the comment**: GitHub posts it after the Short goes public. Then https://studio.youtube.com/video/Kf4bs3yhiVY/comments → three dots → **Pin**
+
+### Extra Short: one topic · public Mon 23 Nov 07:00
+- [ ] **Related video**: https://studio.youtube.com/video/WxWcOWfUXB0/edit → **Related video** → choose "เบี้ยผู้สูงอายุ ธ.ค. 69 เข้า 9 ธ.ค. ไม่ใช่วันที่ 10 ม.ค. 70 เข้าวันไหน" → **Save**
+- [ ] **Pin the comment**: GitHub posts it after the Short goes public. Then https://studio.youtube.com/video/WxWcOWfUXB0/comments → three dots → **Pin**
+
+### Community quiz (after the video is public)
+- [ ] YouTube → **Create** → **Post** → **Quiz**, paste these, tick the ✅ answer, Post:
+
+```text
+เดือนธันวาคม 2569 เบี้ยยังชีพผู้สูงอายุจ่ายวันไหน
+```
+Option A ✅ correct
+```text
+วันพุธที่ 9 ธันวาคม
+```
+Option B
+```text
+วันพฤหัสบดีที่ 10 ธันวาคม
+```
+Option C
+```text
+วันที่ 1 ธันวาคม
+```
+
+### Check (optional)
+- [ ] Tue 24 Nov 18:00: https://studio.youtube.com/video/dBl1Lyi0xjo/analytics → if click-through rate is under about 3 %, change the title to a backup title (see [kit](kits/007-pay-date-dec-jan.md), step 2)
 
 ---
