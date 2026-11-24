@@ -122,6 +122,39 @@
           "comment_id": "UgyUsrVzd7lgCJRfF8J4AaABAg"
         }
       ]
+    },
+    {
+      "id": "004-fake-news-and-scams",
+      "title": "ข่าวเงินเข้าผู้สูงอายุ เช็กยังไงว่าจริง กันมิจฉาชีพ",
+      "short_title": "ไฮไลต์ | ข่าวเงินเข้าผู้สูงอายุ เช็กยังไงว่าจริง กันมิจฉาชีพ",
+      "as_of": "15 พฤศจิกายน 2569",
+      "rendered_at": "2026-11-24",
+      "seconds": 774.9,
+      "short_seconds": 60.2,
+      "youtube_id": "0Ps2hDS_Mn4",
+      "short_youtube_id": "UAurm-hNUWQ",
+      "publish": "ตั้งเวลาเผยแพร่อัตโนมัติ: คลิปยาว 2026-11-24 18:00 คลิปสั้น 2026-11-24 20:00 (เวลาไทย) ยูทูบจะเปลี่ยนจากส่วนตัวเป็นสาธารณะเองเมื่อถึงเวลา",
+      "publish_at": "2026-11-24T11:00:00Z",
+      "short_publish_at": "2026-11-24T13:00:00Z",
+      "playlist_id": "PLXBusUQ3mMDE",
+      "comment_id": "",
+      "short_comment_id": "",
+      "extra_shorts": [
+        {
+          "kind": "quiz",
+          "title": "ทายก่อนเฉลย | มีข้อความบอกว่าเงินเข้าแล้ว ขอรหัส OTP เพื่อยืนยัน ควรทำอย่างไร",
+          "youtube_id": "10J5YJCHQ9U",
+          "publish_at": "2026-11-25T05:00:00Z",
+          "comment_id": ""
+        },
+        {
+          "kind": "focus",
+          "title": "ระวัง! สัญญาณหลอก | ข่าวเงินเข้าผู้สูงอายุ เช็กยังไงว่าจริง กันมิจฉาชีพ",
+          "youtube_id": "FRebA73sdVg",
+          "publish_at": "2026-11-25T00:00:00Z",
+          "comment_id": ""
+        }
+      ]
     }
   ]
 }

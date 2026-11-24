@@ -1,7 +1,7 @@
 # Manual YouTube jobs
 
 Only the things YouTube's API cannot do. Everything else (upload, title, description, tags, thumbnail, captions, playlist, schedule, comments) is automatic.
-Videos stay here until 10 days after they go public. Times are Thailand time. Updated Mon 23 Nov 13:23.
+Videos stay here until 10 days after they go public. Times are Thailand time. Updated Tue 24 Nov 14:01.
 
 About 5 minutes per video. Do the long video after it goes public (18:00), the Short after 20:00.
 
@@ -168,5 +168,50 @@ Option C
 
 ### Check (optional)
 - [ ] Tue 24 Nov 18:00: https://studio.youtube.com/video/dBl1Lyi0xjo/analytics → if click-through rate is under about 3 %, change the title to a backup title (see [kit](kits/007-pay-date-dec-jan.md), step 2)
+
+---
+
+## Tue 24 Nov 18:00 · ข่าวเงินเข้าผู้สูงอายุ เช็กยังไงว่าจริง กันมิจฉาชีพ
+
+Public from **Tue 24 Nov 18:00** · Long: https://youtu.be/0Ps2hDS_Mn4 · Short: https://youtube.com/shorts/UAurm-hNUWQ
+
+### Long video
+- [ ] **Pin the comment**: GitHub posts it about 20 min after Tue 24 Nov 18:00. Then https://studio.youtube.com/video/0Ps2hDS_Mn4/comments → three dots → **Pin**
+- [ ] **End screen**: https://studio.youtube.com/video/0Ps2hDS_Mn4/editor → End screen → **Import from video** → pick "เบี้ยผู้สูงอายุ ธ.ค. 69 เข้า 9 ธ.ค. ไม่ใช่วันที่ 10 ม.ค. 70 เข้าวันไหน" → **Save**
+- [ ] *(optional)* **Card**: same editor → Cards → **Playlist** at about the middle of the video
+
+### Short
+- [ ] **Related video**: https://studio.youtube.com/video/UAurm-hNUWQ/edit → **Related video** → choose "ข่าวเงินเข้าผู้สูงอายุ เช็กยังไงว่าจริง กันมิจฉาชีพ" → **Save**
+- [ ] **Pin the comment**: GitHub posts it about 20 min after Tue 24 Nov 20:00. Then https://studio.youtube.com/video/UAurm-hNUWQ/comments → three dots → **Pin**
+
+### Extra Short: quiz · public Wed 25 Nov 12:00
+- [ ] **Related video**: https://studio.youtube.com/video/10J5YJCHQ9U/edit → **Related video** → choose "ข่าวเงินเข้าผู้สูงอายุ เช็กยังไงว่าจริง กันมิจฉาชีพ" → **Save**
+- [ ] **Pin the comment**: GitHub posts it after the Short goes public. Then https://studio.youtube.com/video/10J5YJCHQ9U/comments → three dots → **Pin**
+
+### Extra Short: one topic · public Wed 25 Nov 07:00
+- [ ] **Related video**: https://studio.youtube.com/video/FRebA73sdVg/edit → **Related video** → choose "ข่าวเงินเข้าผู้สูงอายุ เช็กยังไงว่าจริง กันมิจฉาชีพ" → **Save**
+- [ ] **Pin the comment**: GitHub posts it after the Short goes public. Then https://studio.youtube.com/video/FRebA73sdVg/comments → three dots → **Pin**
+
+### Community quiz (after the video is public)
+- [ ] YouTube → **Create** → **Post** → **Quiz**, paste these, tick the ✅ answer, Post:
+
+```text
+มีข้อความบอกว่าเงินเข้าแล้ว ขอรหัส OTP เพื่อยืนยัน ควรทำอย่างไร
+```
+Option A
+```text
+ส่งรหัสให้ จะได้เงินเร็ว
+```
+Option B ✅ correct
+```text
+หยุด ไม่ส่งรหัส แล้วโทรถามหน่วยงานเอง
+```
+Option C
+```text
+กดลิงก์ในข้อความดูก่อน
+```
+
+### Check (optional)
+- [ ] Thu 26 Nov 18:00: https://studio.youtube.com/video/0Ps2hDS_Mn4/analytics → if click-through rate is under about 3 %, change the title to a backup title (see [kit](kits/004-fake-news-and-scams.md), step 2)
 
 ---
